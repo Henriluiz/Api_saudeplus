@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
+// A Função de verificarUserCPF
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
+
 class AuthUserController extends Controller
 {
     public function login(Request $request)
@@ -87,6 +91,67 @@ class AuthUserController extends Controller
                 'details' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function verificarUserCPF(Request $request) // *O certo é "verificar Disponibilidade" mas eu prefiro assim!
+    {
+         try {
+
+            $dados = $request->validate([
+                'username' => 'nullable|string|required_without:cpf',
+                'cpf' => 'nullable|string|required_without:username',
+            ]);
+
+            $usernameExiste = false;
+            $cpfExiste = false;
+
+            if (!empty($dados['username'])) {
+                $usernameExiste = User::where('username', $dados['username'])->exists();
+            }
+
+            if (!empty($dados['cpf'])) {
+
+                // remove máscara do CPF
+                $cpf = preg_replace('/\D/', '', $dados['cpf']);
+
+                $cpfExiste = User::where('cpf', $cpf)->exists();
+            }
+
+            return response()->json([
+                'username_disponivel' => !$usernameExiste,
+                'cpf_disponivel' => !$cpfExiste,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro ao verificar disponibilidade',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function redefinirSenha(Request $request)
+    {
+        $dados = $request->validate([
+            'token_verificacao' => 'required',
+            'nova_senha' => 'required|min:8'
+        ]);
+
+        $userId = Cache::get('verificacao_'.$dados['token_verificacao']);
+
+        if (!$userId) {
+            return response()->json(['error' => 'Token inválido ou expirado'], 401);
+        }
+
+        $user = User::find($userId);
+
+        $user->update([
+            'senha_hash' => Hash::make($dados['nova_senha'])
+        ]);
+
+        Cache::forget('verificacao_'.$dados['token_verificacao']);
+
+        return response()->json(['message' => 'Senha atualizada com sucesso']);
     }
 
     public function updatePerfil(Request $request)

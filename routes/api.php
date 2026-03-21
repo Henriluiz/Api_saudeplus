@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthUserController;
 Route::post('/registerPsicologo', [UsersController::class, 'cadastroPsicologo']);
 Route::post('/registerPaciente', [usersController::class, 'cadastroPaciente']);
 Route::post('/login', [AuthUserController::class, 'login']);
+Route::post('/verificarUserCPF', [AuthUserController::class, 'verificarUserCPF']);
 
 Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/update', [AuthUserController::class, 'updatePerfil']);
