@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Psicologo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -26,20 +25,8 @@ class AuthUserController extends Controller
 
             $user = User::where('email', $credenciais['login'])->first();
 
-            if (!$user){
-                $psicologo = Psicologo::where('crp', $credenciais['login'])->first();
-
-                if($psicologo){
-                    $user = User::find($psicologo->id_usuario);
-                }
-            }
-
             if (!$user || !Hash::check($credenciais['senha'], $user->senha_hash)) {
                 return response()->json(['error' => 'Credenciais inválidas'], 401);
-            }
-
-            if ($user->tipo_usuario === 'psicologo' && $user->psicologo->status_psicologo !== 'aprovado') {
-                return response()->json(['error' => 'Aguarde verificação da conta'], 403);
             }
 
             $token = $user->createToken('auth-token')->plainTextToken;
@@ -78,11 +65,10 @@ class AuthUserController extends Controller
         try {
 
             $user = $request->user();
-            $psicologo = Psicologo::where('id_usuario', $user->id_usuario)->first();
+            // $psicologo = Psicologo::where('id_usuario', $user->id_usuario)->first();
 
             return response()->json([
                 'user' => $user,
-                'psicologo' => $psicologo
             ], 200);
 
         } catch (\Exception $e) {
@@ -163,10 +149,9 @@ class AuthUserController extends Controller
             $dados = $request->validate([
                 'nome' => 'sometimes|string|max:255',
                 'email' => 'sometimes|email|max:255|unique:users,email,'.$user->id_usuario.',id_usuario',
-                'telefone' => 'sometimes|string|max:20',
                 'senha' => 'sometimes|min:8',
-                'biografia' => 'sometimes|string|max:255',
-
+                'peso_kg' => 'sometimes|numeric',
+                'altura_cm' => 'sometimes|numeric'
             ]);
 
             if (isset($dados['senha'])) {
@@ -175,13 +160,6 @@ class AuthUserController extends Controller
             }
 
             $user->update($dados);
-
-            if ($user->tipo_usuario === "psicologo" && isset($dados['biografia'])) {
-                $user->psicologo()->update([
-                    'biografia' => $dados['biografia'],
-                ]);
-            }
-
 
             return response()->json([
                 'message' => 'Perfil atualizado com sucesso',

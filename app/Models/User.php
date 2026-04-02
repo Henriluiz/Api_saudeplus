@@ -25,28 +25,12 @@ class User extends Authenticatable
         'nome',
         'username',
         'email',
-        'telefone',
         'genero',
-        'senha_hash',
+        'peso_kg',
+        'altura_cm',
         'data_nascimento',
-        'cpf',
-        'tipo_usuario',
-        'status_usuario',
-        'termos_aceitos',
+        'senha_hash',
     ];
-
-
-    public function psicologo()
-    {
-        return $this->hasOne(Psicologo::class, 'id_usuario', 'id_usuario');
-
-    }
-
-    public function paciente ()
-    {
-        return $this->hasOne(Paciente::class, 'id_usuario', 'id_usuario');
-
-    }
 
 
     /**
