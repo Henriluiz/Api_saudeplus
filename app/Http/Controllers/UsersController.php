@@ -31,7 +31,7 @@ class UsersController extends Controller
                 $fotoPerfil = null;
             }
 
-            $data = \Carbon\Carbon::createFromFormat('d/m/Y', $request->data)->format('Y-m-d');
+            $data = \Carbon\Carbon::createFromFormat('Y-m-d', $request->data);
 
             $user = User::create([
                 'nome' => $validatedData['nome'],

@@ -29,7 +29,7 @@ class User extends Authenticatable
         'altura',
         'tipo_sanguineo',
         'data_nascimento',
-        'senha',
+        'senha_hash',
         'foto_perfil',
         'status_usuario'
     ];

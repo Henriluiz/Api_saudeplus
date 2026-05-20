@@ -20,7 +20,7 @@ return new class extends Migration
                 'PREFIRO_NAO_INFORMAR'
             ]);
 
-            $table->string('senha');
+            $table->string('senha_hash');
             $table->date('data_nascimento');
 
             // NOVOS CAMPOS
