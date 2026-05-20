@@ -39,7 +39,7 @@ class UsersController extends Controller
                 'genero' => $validatedData['genero'],
                 'peso' => $validatedData['peso'],
                 'altura' => $validatedData['altura'],
-                'senha' =>Hash::make($validatedData['senha']),
+                'senha_hash' =>Hash::make($validatedData['senha']),
                 'data_nascimento' => $data,
                 'foto_perfil' => $fotoPerfil,
             ]);
