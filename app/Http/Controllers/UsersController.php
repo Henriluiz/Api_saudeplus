@@ -16,24 +16,37 @@ class UsersController extends Controller
         try{
             $validatedData = $request->validate([
                 'nome' => 'required|string|max:255',
+<<<<<<< HEAD
                 // 'username' => 'required|string|max:255|unique:users,username',
+=======
+>>>>>>> bf82d232fa9adc08632bb468622589772396c576
                 'email' => 'required|string|email|max:255|unique:users,email',
                 'genero' => 'required|in:MASCULINO,FEMININO,OUTRO,PREFIRO_NAO_INFORMAR',
-                'peso_kg' => 'required|numeric',
-                'altura_cm' => 'required|numeric',
+                'peso' => 'required|numeric',
+                'altura' => 'required|numeric',
                 'senha' => 'required|string|min:6',
                 'data' => 'required|date',
+                'foto_perfil' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             ]);
+
+            if ($request->hasFile('foto')) {
+                $fotoPerfil = $request->file('foto')->store('fotos', 'public');
+            } else {
+                $fotoPerfil = null;
+            }
+
+            $data = \Carbon\Carbon::createFromFormat('Y-m-d', $request->data);
 
             $user = User::create([
                 'nome' => $validatedData['nome'],
                 // 'username' => $validatedData['username'],
                 'email' => $validatedData['email'],
                 'genero' => $validatedData['genero'],
-                'peso_kg' => $validatedData['peso_kg'],
-                'altura_cm' => $validatedData['altura_cm'],
+                'peso' => $validatedData['peso'],
+                'altura' => $validatedData['altura'],
                 'senha_hash' =>Hash::make($validatedData['senha']),
-                'data_nascimento' => $validatedData['data'],
+                'data_nascimento' => $data,
+                'foto_perfil' => $fotoPerfil,
             ]);
 
             DB::commit();

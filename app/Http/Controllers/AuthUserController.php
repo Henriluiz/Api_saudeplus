@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 // A Função de verificarUserCPF
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
 {
@@ -25,9 +26,19 @@ class AuthUserController extends Controller
 
             $user = User::where('email', $credenciais['login'])->first();
 
+            // ← ADICIONE ISSO
+           Log::info('Login debug', [
+               'email_buscado' => $credenciais['login'],
+               'user_encontrado' => $user ? 'SIM' : 'NÃO',
+               'senha_recebida' => $credenciais['senha'],
+               'hash_no_banco' => $user?->senha_hash,
+               'hash_check' => $user ? Hash::check($credenciais['senha'], $user->senha_hash) : false,
+           ]);
+
             if (!$user || !Hash::check($credenciais['senha'], $user->senha_hash)) {
                 return response()->json(['error' => 'Credenciais inválidas'], 401);
             }
+
 
             $token = $user->createToken('auth-token')->plainTextToken;
 
