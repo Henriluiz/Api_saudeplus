@@ -16,7 +16,7 @@ class UsersController extends Controller
         try{
             $validatedData = $request->validate([
                 'nome' => 'required|string|max:255',
-                'username' => 'required|string|max:255|unique:users,username',
+                // 'username' => 'required|string|max:255|unique:users,username',
                 'email' => 'required|string|email|max:255|unique:users,email',
                 'genero' => 'required|in:MASCULINO,FEMININO,OUTRO,PREFIRO_NAO_INFORMAR',
                 'peso_kg' => 'required|numeric',
@@ -27,7 +27,7 @@ class UsersController extends Controller
 
             $user = User::create([
                 'nome' => $validatedData['nome'],
-                'username' => $validatedData['username'],
+                // 'username' => $validatedData['username'],
                 'email' => $validatedData['email'],
                 'genero' => $validatedData['genero'],
                 'peso_kg' => $validatedData['peso_kg'],

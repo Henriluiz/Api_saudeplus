@@ -65,7 +65,6 @@ class AuthUserController extends Controller
         try {
 
             $user = $request->user();
-            // $psicologo = Psicologo::where('id_usuario', $user->id_usuario)->first();
 
             return response()->json([
                 'user' => $user,
@@ -79,44 +78,7 @@ class AuthUserController extends Controller
         }
     }
 
-    public function verificarUserCPF(Request $request) // *O certo é "verificar Disponibilidade" mas eu prefiro assim!
-    {
-         try {
-
-            $dados = $request->validate([
-                'username' => 'nullable|string|required_without:cpf',
-                'cpf' => 'nullable|string|required_without:username',
-            ]);
-
-            $usernameExiste = false;
-            $cpfExiste = false;
-
-            if (!empty($dados['username'])) {
-                $usernameExiste = User::where('username', $dados['username'])->exists();
-            }
-
-            if (!empty($dados['cpf'])) {
-
-                // remove máscara do CPF
-                $cpf = preg_replace('/\D/', '', $dados['cpf']);
-
-                $cpfExiste = User::where('cpf', $cpf)->exists();
-            }
-
-            return response()->json([
-                'username_disponivel' => !$usernameExiste,
-                'cpf_disponivel' => !$cpfExiste,
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Erro ao verificar disponibilidade',
-                'details' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    public function redefinirSenha(Request $request)
+    public function redefinirSenha(Request $request) // Não testado
     {
         $dados = $request->validate([
             'token_verificacao' => 'required',
